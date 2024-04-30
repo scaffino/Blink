@@ -25,7 +25,7 @@ vultr_node = 8331 # vultr port
 k = 6
 
 # entropy tx parameters
-id_user = Id(which_chain, 'd44348ff037a7f65bcf9b7c86181828f5e05dbfe6cf2efe9af6362c8d53a00b0') 
+id_user = Id(which_chain, 'a random string') 
 #id_user = Id(which_chain)
 input_tx = 'aba719b0532e805ff5f83c77bc9f741b1dec24c3b7b9323bfab7631ba0d7b6db'
 output_indx = 1
