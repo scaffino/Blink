@@ -22,7 +22,7 @@ def main():
         assert txid != None, "Entropy not posted"
         print("This is the id of newly posted entropy transaction: ", txid)
     else:
-        txid = '474556047d2afe30463adbb387f1c8696b3d5b1dc4b03b76cfaf1c3477521a5f'
+        txid = '474556047d2afe30463adbb387f1c8696b3d5b1dc4b03b76cfaf1c3477521a5f' # test txid
     
     print("...waiting for entropy tx to be k =", k, "confirmed...")
     

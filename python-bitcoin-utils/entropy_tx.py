@@ -11,10 +11,8 @@ output_num = 1
 coins = 42504
 fee = 7200
 
-#def create_entropy_tx(id_user: Id, input_txid: str, output_num: int, val: int, fee: int): 
 def create_entropy_tx(): 
     #input
-    #tx_in = TxInput('1f0de4710d6d7d7e1cc38e8c86510eaa18ca5e42a176f39496c88e9cf25c11fb', 0) 
     tx_in = TxInput(input_txid, output_num)
     # entropy output
     op_return_script =  Script(['OP_RETURN', get_randomess(20)])
