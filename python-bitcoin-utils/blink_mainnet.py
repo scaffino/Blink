@@ -11,21 +11,22 @@ from identity import Id
 import init
 import os
 import sys
+from merkle_verification import verify_merkle_proof
 
 init.init_network()
 
-dry_run = False  # if true, no transactions will be posted on chain
+dry_run = True  # if true, no transactions will be posted on chain
 which_chain = 'mainnet'
 
 #endpoints
 secpriv_node = 8332 # secpriv port
-vultr_node = 8331 # vultr port
+vultr_node = 8332 # vultr port
 
 # common prefix parameter
 k = 6
 
 # entropy tx parameters
-id_user = Id(which_chain, 'a random string') 
+id_user = Id(which_chain, 'd44348ff037a7f65bcf9b7c86181828f5e05dbfe6cf2efe9af6362c8d53a00b0') 
 #id_user = Id(which_chain)
 input_tx = 'aba719b0532e805ff5f83c77bc9f741b1dec24c3b7b9323bfab7631ba0d7b6db'
 output_indx = 1
@@ -110,9 +111,11 @@ def retrieve_and_validate_proof(height: int, txid: str, node1: int, node2: int):
     print("Ancestry and PoW checks passed")
 
     #check entropy is in the middle block
-    proof = get_txout_proof(txid, get_block_hash(height, True, node1), node1)['result']
-    is_txid = verify_txout_proof(proof, node2)['result'][0] # todo: let the other node verify it
-    assert txid == is_txid, "Entropy not included in the (k+1)-th block of the proof"
+    entropy_block_hash = get_block_hash(height, True, node1)
+    entropy_block_header = get_block_header(entropy_block_hash, node1)
+    proof = get_txout_proof(txid, entropy_block_hash, node1)['result']
+    verify_merkle_proof(proof, entropy_block_header['result']['merkleroot'], txid)
+    #assert txid == is_txid, "Entropy not included in the (k+1)-th block of the proof"
     print("Entropy is in the (k+1)-th block of the proof")
 
 
