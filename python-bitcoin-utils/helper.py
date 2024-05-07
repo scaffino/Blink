@@ -32,8 +32,3 @@ def decompress_pubkey(pk):
     y = y.to_bytes(32, byteorder='big')
     return b'\x04' + pk[1:33] + y
 
-#def print_tx(tx: Transaction, name: str) -> None:
-#    print(f'{name}: {int(len(tx.serialize())/2)} Bytes')
-#    print(tx.serialize())
-#    print('----------------------------------')
-
