@@ -1,17 +1,15 @@
 from bitcoinutils.keys import P2pkhAddress, PrivateKey, PublicKey
 import init
-from helper import decompress_pubkey
-from bitcoinutils.setup import setup
 import binascii
 
-init.init_network()
+#init.init_network()
 
 class Id:
     """
     Helper class for handling identity related keys and addresses easily
     """
-    #def __init__(self, sk: str):
     def __init__(self, sk: str):
+    #def __init__(self, sk: str):
         self.sk = PrivateKey(secret_exponent=int(sk,16))
         print("Private Key: ", binascii.hexlify(PublicKey.to_bytes(self.sk)))
         self.pk = self.sk.get_public_key()

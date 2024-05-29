@@ -1,3 +1,5 @@
+# useful link on Merkle verification for Bitcoin: https://github.com/bitcoin/bitcoin/blob/master/src/merkleblock.h#L21
+# https://github.com/bitcoin/bitcoin/blob/master/src/merkleblock.cpp
 import hashlib
 import math
 

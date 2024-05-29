@@ -1,6 +1,6 @@
 import bitcoinutils.setup as setup
-import consts
+import config
 
-def init_network():
+def init_network(network: str):
     if setup.get_network() == None:
-        setup.setup(consts.network)
+        setup.setup(network)
