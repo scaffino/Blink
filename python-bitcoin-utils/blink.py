@@ -7,6 +7,7 @@ from entropy_tx import create_entropy_tx
 from pow import check_pow
 import configparser
 import ast
+from jsonschema import validate
 
 #todo: verifier.py with all the logic
 #blink.py creates the verifier and runs it
@@ -52,11 +53,14 @@ def main():
 
             tx_info = nodes[jj].get_raw_transaction(txid) # todo: I need to do some checks to validate the answer. No trust on what I get
             if tx_info == None: continue
+            #else: validate(tx_info, schema)
+            #print(validate(tx_info, schema), '\n')
             if tx_info['error'] is None: 
                 if 'confirmations' in tx_info['result']:
                     if tx_info['result']['confirmations'] > k:
                         print("Entropy tx has ", k, " confirmations")
-                        entropy_block_header = nodes[jj].get_block_header(tx_info['result']['blockhash']) #todo: check I get it and check validity 
+                        entropy_block_header = nodes[jj].get_block_header(tx_info['result']['blockhash']) 
+                        validate(entropy_block_header, globals.schema_block_header) # todo: add try catch 
                         entropy_block_height = entropy_block_header['result']['height']
                         retrieve_and_validate_proof(entropy_block_height, txid, nodes[jj])
                         exit_while = True
@@ -72,9 +76,12 @@ def retrieve_and_validate_proof(height: int, txid: str, endpoint: Node):
     for ii in range(height-k, height+k+1):
         #check parent-child
         block_hash = endpoint.get_block_hash(ii)
+        assert(len(block_hash) == 64) # check it is a 32-bytes string
         block_header = endpoint.get_block_header(block_hash)
+        validate(block_header, globals.schema_block_header) # todo: add try catch 
         parenthash = block_header['result']['previousblockhash']
         previousblockhash = endpoint.get_block_hash(ii-1)
+        assert(len(previousblockhash) == 64) # check it is a 32-bytes string
         if (ii > height-k): 
             assert parenthash == previousblockhash, "Ancestry check failed"   
         

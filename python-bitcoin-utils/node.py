@@ -33,6 +33,7 @@ class Node():
 
 
     def get_raw_transaction(self, tx_id: str):
+        #print(self.rpc_request("getrawtransaction", [tx_id, True]))
         return self.rpc_request("getrawtransaction", [tx_id, True]) # true is for verbosity
 
 
