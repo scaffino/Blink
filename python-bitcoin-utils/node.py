@@ -4,50 +4,57 @@ import sys
 import json
 import globals
 
-# one class with multiple instances of it having different endpoints
 
-def get_block(block_hash: str, endpoint: str):
-    return rpc_request("getblock", [block_hash], endpoint)
+class Node():
 
+    def __init__(self, endpoint):
+        self.endpoint = endpoint
 
-def get_block_hash(block_height: str, endpoint: str):
-    while True:
-        response = rpc_request("getblockhash", [block_height], endpoint)
-        if response['error'] == None:
-            return response['result']
+    def display(self):
+        print(f"Endpoint: {self.endpoint}")
 
-
-def get_block_header(block_hash: str, endpoint: str):
-    return rpc_request("getblockheader", [block_hash], endpoint)
+    def get_block(self, block_hash: str,):
+        return self.rpc_request("getblock", [block_hash])
 
 
-def get_chain_tips():
-    return rpc_request("getchaintips", [])
+    def get_block_hash(self, block_height: str):
+        while True:
+            response = self.rpc_request("getblockhash", [block_height])
+            if response['error'] == None:
+                return response['result']
 
 
-def get_raw_transaction(tx_id: str, endpoint: str):
-    return rpc_request("getrawtransaction", [tx_id, True], endpoint) # true is for verbosity
+    def get_block_header(self, block_hash: str):
+        return self.rpc_request("getblockheader", [block_hash])
 
 
-def get_txout_proof(tx_id: str, block_hash: str, endpoint: str):
-    return rpc_request("gettxoutproof", [[tx_id], block_hash], endpoint) #block hash is optional
+    def get_chain_tips(self):
+        return self.rpc_request("getchaintips", [])
 
 
-def verify_txout_proof(proof: str, endpoint: str):
-    return rpc_request("verifytxoutproof", [proof], endpoint)
+    def get_raw_transaction(self, tx_id: str):
+        return self.rpc_request("getrawtransaction", [tx_id, True]) # true is for verbosity
 
 
-def post_tx(tx_hex: str, endpoint: str):
-    return rpc_request("sendrawtransaction", [tx_hex], endpoint)['result'] # returns txid         
+    def get_txout_proof(self, tx_id: str, block_hash: str):
+        return self.rpc_request("gettxoutproof", [[tx_id], block_hash]) #block hash is optional
 
-def rpc_request(method: str, params, endpoint: str):
-    data={"jsonrpc": "1.0", "method": method, "params": params}
-    try: 
-        response = requests.post(endpoint,auth = HTTPBasicAuth('blink', 'blinkpwd'),data=json.dumps(data))
-        globals.proof_size = globals.proof_size + sys.getsizeof(response.json())
 
-    except requests.RequestException as e:
-        print(f"Error querying node at {endpoint}: {e}")
-        return None # Handle the error by returning None 
+    def verify_txout_proof(self, proof: str):
+        return self.rpc_request("verifytxoutproof", [proof])
 
-    return response.json()
+
+    def post_tx(self, tx_hex: str):
+        return self.rpc_request("sendrawtransaction", [tx_hex])['result'] # returns txid         
+
+    def rpc_request(self, method: str, params):
+        data={"jsonrpc": "1.0", "method": method, "params": params}
+        try: 
+            response = requests.post(self.endpoint,auth = HTTPBasicAuth('blink', 'blinkpwd'),data=json.dumps(data))
+            globals.proof_size = globals.proof_size + sys.getsizeof(response.json())
+
+        except requests.RequestException as e:
+            print(f"Error querying node at {self.endpoint}: {e}")
+            return None # Handle the error by returning None 
+
+        return response.json()
