@@ -1,10 +1,10 @@
 from pprint import pprint
 import init
 from merkle_verification import verify_merkle_proof
-from query_node import post_tx, get_block_hash, get_block_header, get_raw_transaction, get_txout_proof
+from node import post_tx, get_block_hash, get_block_header, get_raw_transaction, get_txout_proof
 import globals
 from entropy_tx import create_entropy_tx
-from check_pow import check_pow
+from pow import check_pow
 import configparser
 import ast
 

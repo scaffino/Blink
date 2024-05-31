@@ -4,7 +4,6 @@ import sys
 import json
 import globals
 
-#todo: rename with node
 # one class with multiple instances of it having different endpoints
 
 def get_block(block_hash: str, endpoint: str):
