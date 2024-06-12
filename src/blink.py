@@ -1,3 +1,6 @@
+#!/usr/bin/python 
+#todo: make above work 
+
 from pprint import pprint
 import init
 from merkle_verification import verify_merkle_proof
@@ -11,16 +14,21 @@ from jsonschema import validate
 
 #todo: verifier.py with all the logic
 #blink.py creates the verifier and runs it
+#todo: pep8
 
 Config = configparser.ConfigParser()
-Config.read('./python-bitcoin-utils/config.ini')
+Config.read('./src/config.ini') #todo: argparse for config, override via cli the settings of the config 
 k = Config.getint('Settings', 'k')
 nodes_endpoints = ast.literal_eval(Config['Settings']['nodes_endpoints'])
+nodes_usernames = ast.literal_eval(Config['Settings']['nodes_usernames'])
+nodes_passwords = ast.literal_eval(Config['Settings']['nodes_passwords'])
 network = Config.get('Settings', 'network')
 
+#todo: also this abstracted to verifier. Make the verifier a Class
 nodes = []
 for ii in range(len(nodes_endpoints)):
-    node_instance = Node(nodes_endpoints[ii])
+    node_instance = Node(nodes_endpoints[ii], nodes_usernames[ii], nodes_passwords[ii])
+    print(node_instance)
     nodes.append(node_instance)
     
 init.init_network(network)
@@ -39,19 +47,18 @@ def main():
         assert txid != None, "Entropy not posted"
         print("This is the id of newly posted entropy transaction: ", txid)
     else:
-        txid = 'f5e923242ce27162bebe3eccbcb7c4d396efc881cc3f3f0c1868f9f5e1e389a6' # test txid
+        txid = 'f5e923242ce27162bebe3eccbcb7c4d396efc881cc3f3f0c1868f9f5e1e389a6' # test txid #todo: test tx make it part of the cli 
     
     print("...waiting for entropy tx to be k =", k, "confirmed...")
     
     # keep querying nodes until the entropy tx has k confirmations
-    while True: 
-
-        exit_while = False
+    confirmed = False
+    while not confirmed:         
 
         # loop over all the nodes the client connected to
-        for jj in range(len(nodes)): 
+        for node in nodes: 
 
-            tx_info = nodes[jj].get_raw_transaction(txid) # todo: I need to do some checks to validate the answer. No trust on what I get
+            tx_info = node.get_raw_transaction(txid) # todo: I need to do some checks to validate the answer. No trust on what I get
             if tx_info == None: continue
             #else: validate(tx_info, schema)
             #print(validate(tx_info, schema), '\n')
@@ -59,15 +66,13 @@ def main():
                 if 'confirmations' in tx_info['result']:
                     if tx_info['result']['confirmations'] > k:
                         print("Entropy tx has ", k, " confirmations")
-                        entropy_block_header = nodes[jj].get_block_header(tx_info['result']['blockhash']) 
+                        entropy_block_header = node.get_block_header(tx_info['result']['blockhash']) 
                         validate(entropy_block_header, globals.schema_block_header) # todo: add try catch 
                         entropy_block_height = entropy_block_header['result']['height']
-                        retrieve_and_validate_proof(entropy_block_height, txid, nodes[jj])
-                        exit_while = True
+                        retrieve_and_validate_proof(entropy_block_height, txid, node)
+                        confirmed = True
                         break 
-                    else: continue
         # todo: for else construction. Else is when the loop complete (check)
-        if exit_while == True: break
 
     print("Blink proof size: ", globals.proof_size)
     

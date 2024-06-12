@@ -1,8 +1,10 @@
-def init():
+def init(): #remove the function, just let variables
     global proof_size 
     proof_size = 0
 
-    global schema_block_header
+    #todo: move into schemas.py
+    global schema_block_header # get rid of this line
+    #todo: qualified import: from schemas import schema_block_header
     schema_block_header = {
     "type": "object",
     "properties": {
