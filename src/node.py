@@ -7,6 +7,7 @@ import globals
 
 class Node():
 
+
     def __init__(self, endpoint, username, password):
         self.endpoint = endpoint
         self.username = username
@@ -15,12 +16,14 @@ class Node():
         #todo: blink and blinkpwd part of the config. Make it part of the constructor, via a dictionary with 3 attributes
         #todo: bytes_sent, bytes_received -> to replace the proof_size
 
+
     def __repr__(self):
         #return f"Endpoint: {self.endpoint}"
-        return (f"Node(endpoint={self.endpoint!r}, "
-                f"username={self.username!r}, "
-                f"password={self.password!r})")
-    
+        return (f"Node(endpoint = {self.endpoint!r}, "
+                f"username = {self.username!r}, "
+                f"password = {self.password!r})")
+
+       
     def get_block(self, block_hash: str,):
         return self.rpc_request("getblock", [block_hash])
 
@@ -56,10 +59,10 @@ class Node():
     def post_tx(self, tx_hex: str):
         return self.rpc_request("sendrawtransaction", [tx_hex])['result'] # returns txid         
 
+
     def rpc_request(self, method: str, params):
-        data={"jsonrpc": "1.0", "method": method, "params": params}
+        data = {"jsonrpc": "1.0", "method": method, "params": params}
         try: 
-            #response = requests.post(self.endpoint,auth = HTTPBasicAuth('blink', 'blinkpwd'),data=json.dumps(data))
             response = requests.post(self.endpoint,auth = HTTPBasicAuth(str(self.username), str(self.password)),data=json.dumps(data))  
             globals.proof_size = globals.proof_size + sys.getsizeof(response.json()) 
 
