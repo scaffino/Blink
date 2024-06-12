@@ -3,6 +3,7 @@
 import hashlib
 import math
 
+
 def verify_merkle_proof(proof, merkle_root, txid):
     """ Verify the merkle proof of a transaction in a block, 
     using the Bitcoin Core proof convention, obtained by 
@@ -22,8 +23,8 @@ def verify_merkle_proof(proof, merkle_root, txid):
     
     # Extract data from proof
     # number of transactions (little endian)
-    num_tx = int(reverse_endianess(proof.partition(merkle_root)[2][24:32]),16) 
-    num_hashes = int(proof.partition(merkle_root)[2][32:34],16)
+    num_tx = int(reverse_endianess(proof.partition(merkle_root)[2][24:32]), 16) 
+    num_hashes = int(proof.partition(merkle_root)[2][32:34], 16)
     height = math.ceil(math.log(num_tx, 2))
     body = proof.partition(merkle_root)[2][34:34+num_hashes*64]
     hashes = [body[i:i+64] for i in range(0, len(body), 64)]
@@ -42,7 +43,7 @@ def verify_merkle_proof(proof, merkle_root, txid):
     else:
         return False
     bits = ""
-    for i in range (0,len(flagbytes),2):
+    for i in range(0, len(flagbytes), 2):
         bits += bin(int(flagbytes[i:i+2], 16))[2:].zfill(8)[::-1]
     bits = bits[:2*height-1]
 
@@ -55,6 +56,7 @@ def verify_merkle_proof(proof, merkle_root, txid):
     computed_root = traverse(bits[1:], 0, height, hashes)[2] 
 
     return computed_root == merkle_root
+
 
 def traverse(bits, pos, height, hashes):
     """ Recursively traverses a partial merkle tree to reconstruct the root, given the 
@@ -96,6 +98,7 @@ def reverse_endianess(hex_str):
     ba = bytearray.fromhex(hex_str)
     ba.reverse()
     return ba.hex()
+
 
 def hash256(hex_str):
     """ Hash a hex string using double SHA-256 """
