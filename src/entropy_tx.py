@@ -10,6 +10,7 @@ output_num = 1
 coins = 42504
 fee = 7200
 
+
 def create_entropy_tx(): 
     #input
     tx_in = TxInput(input_txid, output_num)
@@ -17,7 +18,7 @@ def create_entropy_tx():
     op_return_script =  Script(['OP_RETURN', get_randomess(20)])
     tx_out = TxOutput(0, op_return_script)
     # payback output
-    tx_out1 = TxOutput(int(coins-fee), id_user.p2pkh)
+    tx_out1 = TxOutput(int(coins - fee), id_user.p2pkh)
     # create tx
     tx = Transaction([tx_in], [tx_out, tx_out1])
     #compute signature
@@ -28,6 +29,7 @@ def create_entropy_tx():
 
     print("Entropy transaction: ", tx.serialize())
     return tx
+
 
 def get_randomess(length):
     return os.urandom(length).hex()
