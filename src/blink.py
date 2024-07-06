@@ -1,4 +1,5 @@
-# from pprint import pprint
+#!/my/python/shebang/line
+
 import init
 from merkle_verification import verify_merkle_proof
 from node import Node
@@ -10,7 +11,6 @@ import ast
 from jsonschema import validate
 from schemas import schema_block_header
 import argparse
-
 
 def main():
 
