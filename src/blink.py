@@ -9,37 +9,41 @@ import configparser
 import ast
 from jsonschema import validate
 from schemas import schema_block_header
-
-Config = configparser.ConfigParser()
-Config.read('./src/config.ini')  # todo: argparse for config, override via cli the settings of the config 
-k = Config.getint('Settings', 'k')
-nodes_endpoints = ast.literal_eval(Config['Settings']['nodes_endpoints'])
-nodes_usernames = ast.literal_eval(Config['Settings']['nodes_usernames'])
-nodes_passwords = ast.literal_eval(Config['Settings']['nodes_passwords'])
-network = Config.get('Settings', 'network')
-
-nodes = []
-for ii in range(len(nodes_endpoints)):
-    node_instance = Node(nodes_endpoints[ii], nodes_usernames[ii], nodes_passwords[ii])
-    print(node_instance)
-    nodes.append(node_instance)
-    
-init.init_network(network)
-globals.init()
-
-#todo: make cli argument 
-dry_run = True  # if true, no transaction will be posted on chain
+import argparse
 
 
 def main():
 
+    parser = argparse.ArgumentParser(description="A simple CLI tool.")
+    parser.add_argument('--no-dry-run', action='store_false', default=True) 
+    parser.add_argument('--test-txid', type=str, default='f5e923242ce27162bebe3eccbcb7c4d396efc881cc3f3f0c1868f9f5e1e389a6')
+    parser.add_argument('--config', default='./src/config.ini')
+    args = parser.parse_args()
+
+    Config = configparser.ConfigParser()
+    Config.read(args.config) 
+    k = Config.getint('Settings', 'k')
+    nodes_endpoints = ast.literal_eval(Config['Settings']['nodes_endpoints'])
+    nodes_usernames = ast.literal_eval(Config['Settings']['nodes_usernames'])
+    nodes_passwords = ast.literal_eval(Config['Settings']['nodes_passwords'])
+    network = Config.get('Settings', 'network')
+
+    nodes = []
+    for ii in range(len(nodes_endpoints)):
+        node_instance = Node(nodes_endpoints[ii], nodes_usernames[ii], nodes_passwords[ii])
+        print(node_instance)
+        nodes.append(node_instance)
+        
+    init.init_network(network)
+    globals.init()
+
     entropy_tx = create_entropy_tx()
-    if not dry_run:
+    if not args.no_dry_run: 
         txid = nodes[0].post_tx(entropy_tx.serialize())
         assert txid is not None, "Entropy not posted"
         print("This is the id of newly posted entropy transaction: ", txid)
     else:
-        txid = 'f5e923242ce27162bebe3eccbcb7c4d396efc881cc3f3f0c1868f9f5e1e389a6' # test txid #todo: test tx make it part of the cli 
+        txid = args.test_txid 
     
     print("...waiting for entropy tx to be k =", k, "confirmed...")
     
@@ -50,7 +54,7 @@ def main():
         # loop over all the nodes the client connected to
         for node in nodes:
 
-            tx_info = node.get_raw_transaction(txid)  # todo: I need to do some checks to validate the answer. No trust on what I get
+            tx_info = node.get_raw_transaction(txid)  
             if tx_info is None:
                 continue
             if tx_info['error'] is None: 
@@ -58,9 +62,9 @@ def main():
                     if tx_info['result']['confirmations'] > k:
                         print("Entropy tx has ", k, " confirmations")
                         entropy_block_header = node.get_block_header(tx_info['result']['blockhash']) 
-                        validate(entropy_block_header, schema_block_header)  # todo: add try catch 
+                        validate(entropy_block_header, schema_block_header)  
                         entropy_block_height = entropy_block_header['result']['height']
-                        retrieve_and_validate_proof(entropy_block_height, txid, node)
+                        retrieve_and_validate_proof(entropy_block_height, txid, node, k)
                         confirmed = True
                         break
         # todo: for else construction. Else is when the loop complete (check)
@@ -69,7 +73,7 @@ def main():
 
 
 # todo: test and handle errors. Return True/False
-def retrieve_and_validate_proof(height: int, txid: str, endpoint: Node):
+def retrieve_and_validate_proof(height: int, txid: str, endpoint: Node, k: int):
     for ii in range(height-k, height+k+1):
         # check parent-child
         block_hash = endpoint.get_block_hash(ii)
