@@ -1,4 +1,4 @@
-#!/my/python/shebang/line
+#!/Users/gscaffino/anaconda3/bin/python
 
 import init
 from merkle_verification import verify_merkle_proof
@@ -67,12 +67,11 @@ def main():
                         retrieve_and_validate_proof(entropy_block_height, txid, node, k)
                         confirmed = True
                         break
-        # todo: for else construction. Else is when the loop complete (check)
 
     print("Blink proof size: ", globals.proof_size)
 
 
-# todo: test and handle errors. Return True/False
+# todo: test and handle errors. 
 def retrieve_and_validate_proof(height: int, txid: str, endpoint: Node, k: int):
     for ii in range(height-k, height+k+1):
         # check parent-child

@@ -3,13 +3,14 @@ from identity import Id
 from bitcoinutils.script import Script
 import os
 
-# entropy tx parameters
-id_user = Id('d44348ff037a7f65bcf9b7c86181828f5e05dbfe6cf2efe9af6362c8d53a00b0')
+f = open("./src/secret-key.txt", "r") # the secret key file only contains the secret key
+secret_key = f.readline()
+
+id_user = Id(secret_key) 
 input_txid = 'aba719b0532e805ff5f83c77bc9f741b1dec24c3b7b9323bfab7631ba0d7b6db'
 output_num = 1
 coins = 42504
 fee = 7200
-
 
 def create_entropy_tx(): 
     # input
