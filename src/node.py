@@ -22,12 +22,9 @@ class Node():
 
     def get_block(self, block_hash: str,):
         return self.rpc_request("getblock", [block_hash])
-
+    
     def get_block_hash(self, block_height: str):
-        while True:  #todo: move it somewhere else to the logic 
-            response = self.rpc_request("getblockhash", [block_height])
-            if response['error'] is None:
-                return response['result']
+        return self.rpc_request("getblockhash", [block_height])
 
     def get_block_header(self, block_hash: str):
         return self.rpc_request("getblockheader", [block_hash])
@@ -37,7 +34,7 @@ class Node():
 
     def get_raw_transaction(self, tx_id: str):
         #print(self.rpc_request("getrawtransaction", [tx_id, True]))
-        return self.rpc_request("getrawtransaction", [tx_id, True])  # true for verbosity
+        return self.rpc_request("getrawtransaction", [tx_id, True])  # true for returning a json
 
     def get_txout_proof(self, tx_id: str, block_hash: str):
         return self.rpc_request("gettxoutproof", [[tx_id], block_hash])  # block hash is optional

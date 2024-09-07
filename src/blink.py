@@ -17,7 +17,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="A simple CLI tool.")
     parser.add_argument('--no-dry-run', action='store_false', default=True) 
-    parser.add_argument('--test-txid', type=str, default='f5e923242ce27162bebe3eccbcb7c4d396efc881cc3f3f0c1868f9f5e1e389a6')
+    parser.add_argument('--test-txid', type=str, default='e30df7cd39d12577f6a7b4cb91f545484822125728e7b9e0812366971b646525') #'f5e923242ce27162bebe3eccbcb7c4d396efc881cc3f3f0c1868f9f5e1e389a6') e30df7cd39d12577f6a7b4cb91f545484822125728e7b9e0812366971b646525
     parser.add_argument('--config', default='./src/config.ini')
     args = parser.parse_args()
 
