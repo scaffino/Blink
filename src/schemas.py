@@ -151,146 +151,15 @@ schema_raw_tx = {
         },
         "vin": {
           "type": "array",
-          "items": [
-            {
-              "type": "object",
-              "properties": {
-                "txid": {
-                  "type": "string"
-                },
-                "vout": {
-                  "type": "integer"
-                },
-                "scriptSig": {
-                  "type": "object",
-                  "properties": {
-                    "asm": {
-                      "type": "string"
-                    },
-                    "hex": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "asm",
-                    "hex"
-                  ]
-                },
-                "txinwitness": {
-                  "type": "array",
-                  "items": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "string"
-                    }
-                  ]
-                },
-                "sequence": {
-                  "type": "integer"
-                }
-              },
-              "required": [
-                "txid",
-                "vout",
-                "scriptSig",
-                "txinwitness",
-                "sequence"
-              ]
-            }
-          ]
+          "items": {
+            "type": "object"
+          }
         },
         "vout": {
           "type": "array",
-          "items": [
-            {
-              "type": "object",
-              "properties": {
-                "value": {
-                  "type": "number"
-                },
-                "n": {
-                  "type": "integer"
-                },
-                "scriptPubKey": {
-                  "type": "object",
-                  "properties": {
-                    "asm": {
-                      "type": "string"
-                    },
-                    "desc": {
-                      "type": "string"
-                    },
-                    "hex": {
-                      "type": "string"
-                    },
-                    "address": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "asm",
-                    "desc",
-                    "hex",
-                    "address",
-                    "type"
-                  ]
-                }
-              },
-              "required": [
-                "value",
-                "n",
-                "scriptPubKey"
-              ]
-            },
-            {
-              "type": "object",
-              "properties": {
-                "value": {
-                  "type": "number"
-                },
-                "n": {
-                  "type": "integer"
-                },
-                "scriptPubKey": {
-                  "type": "object",
-                  "properties": {
-                    "asm": {
-                      "type": "string"
-                    },
-                    "desc": {
-                      "type": "string"
-                    },
-                    "hex": {
-                      "type": "string"
-                    },
-                    "address": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "asm",
-                    "desc",
-                    "hex",
-                    "address",
-                    "type"
-                  ]
-                }
-              },
-              "required": [
-                "value",
-                "n",
-                "scriptPubKey"
-              ]
-            }
-          ]
+          "items": {
+            "type": "object"
+          }
         },
         "hex": {
           "type": "string"
@@ -326,10 +195,16 @@ schema_raw_tx = {
       ]
     },
     "error": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "id": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     }
   },
   "required": [

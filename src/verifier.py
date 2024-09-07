@@ -28,15 +28,15 @@ class Verifier():
 
                 tx_info = node.get_raw_transaction(txid) 
                 #print(" ")
-                print("raw tx: ", tx_info)
+                #print("raw tx: ", tx_info)
                 #print(" ")
                 #print("schema raw tx: ", schema_raw_tx_result_vin)
-                #try:
-                #    validate(tx_info, schema_raw_tx)
-                #except ValidationError as e:
-                #    print(f"Raw tx is not in the correct format: {e.message}")
-                #except Exception as e:
-                #    print(f"An unexpected error occurred: {e}")
+                try:
+                    validate(tx_info, schema_raw_tx)
+                except ValidationError as e:
+                    print(f"Raw tx is not in the correct format: {e.message}")
+                except Exception as e:
+                    print(f"An unexpected error occurred: {e}")
                 if tx_info is None:
                     continue
                 if tx_info['error'] is None: 

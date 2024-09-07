@@ -1,15 +1,12 @@
 #!/Users/gscaffino/anaconda3/bin/python
 
 import init
-from merkle_verification import verify_merkle_proof
 from node import Node
 from verifier import Verifier
 import globals 
 from entropy_tx import create_entropy_tx
-from pow import check_pow
 import configparser
 import ast
-from jsonschema import validate
 from schemas import schema_block_header
 import argparse
 
