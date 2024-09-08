@@ -20,11 +20,15 @@ def main():
     # read config file
     Config = configparser.ConfigParser()
     Config.read(args.config) 
-    k = Config.getint('Settings', 'k')
+    k = Config.getint('Common Prefix', 'k')
     nodes_endpoints = ast.literal_eval(Config['Settings']['nodes_endpoints'])
     nodes_usernames = ast.literal_eval(Config['Settings']['nodes_usernames'])
     nodes_passwords = ast.literal_eval(Config['Settings']['nodes_passwords'])
     network = Config.get('Settings', 'network')
+    input_txid = ast.literal_eval(Config['Entropy Transaction Parameters']['input_txid'])
+    output_id = Config.getint('Entropy Transaction Parameters', 'output_id')
+    coins = Config.getint('Entropy Transaction Parameters', 'coins')
+    fee = Config.getint('Entropy Transaction Parameters', 'fee')
 
     # connect to prover nodes
     nodes = []
@@ -35,7 +39,7 @@ def main():
     init.init_network(network)
 
     # create entropy
-    entropy_tx = create_entropy_tx()
+    entropy_tx = create_entropy_tx(input_txid, output_id, coins, fee)
     
     # verifier logic
     verifier = Verifier()

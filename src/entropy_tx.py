@@ -7,14 +7,10 @@ f = open("./src/secret-key.txt", "r") # the secret key file only contains the se
 secret_key = f.readline()
 
 id_user = Id(secret_key) 
-input_txid = 'b0ee32424a29919a29419fb1393d1d0e996c6e901cb864c15c767e5e4f1a551e' #'b0ee32424a29919a29419fb1393d1d0e996c6e901cb864c15c767e5e4f1a551e'
-output_num = 1
-coins = 35304
-fee = 7200
 
-def create_entropy_tx(): 
+def create_entropy_tx(input_txid: str, output_id: int, coins: int, fee: int): 
     # input
-    tx_in = TxInput(input_txid, output_num)
+    tx_in = TxInput(input_txid, output_id)
     # entropy output
     op_return_script = Script(['OP_RETURN', get_randomess(20)])
     tx_out = TxOutput(0, op_return_script)
