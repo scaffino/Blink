@@ -12,7 +12,7 @@ def main():
 
     # read cli commands
     parser = argparse.ArgumentParser(description="A simple CLI tool.")
-    parser.add_argument('--no-dry-run', action='store_false', default=True) 
+    parser.add_argument('--dry-run', action='store_true', default=False)
     parser.add_argument('--test-txid', type=str, default='e30df7cd39d12577f6a7b4cb91f545484822125728e7b9e0812366971b646525') 
     parser.add_argument('--config', default='./src/config.ini')
     args = parser.parse_args()
@@ -39,7 +39,7 @@ def main():
     
     # verifier logic
     verifier = Verifier()
-    txid = verifier.broadcast_entropy(args.no_dry_run, args.test_txid, nodes, entropy_tx) 
+    txid = verifier.broadcast_entropy(args.dry_run, args.test_txid, nodes, entropy_tx) 
     
     print("...waiting for entropy tx to be k = {} confirmed...".format(k))
     verifier.get_valid_proof(txid, nodes, k)

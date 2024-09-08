@@ -7,12 +7,15 @@ from jsonschema.exceptions import ValidationError
 
 class Verifier():
 
-    def broadcast_entropy(self, no_dry_run: str, test_txid: str, nodes: list, entropy_tx: str):
-        if not no_dry_run: 
+    def broadcast_entropy(self, dry_run: str, test_txid: str, nodes: list, entropy_tx: str):
+        
+        if not dry_run: 
             txid = nodes[0].post_tx(entropy_tx.serialize())
-            assert (len(txid) == 64), "Assertion failed: txid is not of 32 bytes"
+            # make sure txid exists and is of 32 bytes
             assert txid is not None, "Entropy not posted"
-            print("This is the id of newly posted entropy transaction: ", txid)
+            assert (len(txid) == 64), "Assertion failed: txid is not of 32 bytes"
+
+            print("Id of the newly posted entropy transaction: ", txid)
             return txid
         else:
             return test_txid 
