@@ -2,8 +2,6 @@ import requests
 from requests.auth import HTTPBasicAuth 
 import sys
 import json
-import globals 
-
 
 class Node():
 
@@ -11,9 +9,8 @@ class Node():
         self.endpoint = endpoint
         self.username = username
         self.password = password
-        # self.bytes_received = bytes_received
-        # todo: blink and blinkpwd part of the config. Make it part of the constructor, via a dictionary with 3 attributes
-        # todo: bytes_sent, bytes_received -> to replace the proof_size
+        self.bytes_received = 0
+        self.bytes_sent = 0
 
     def __repr__(self):
         return (f"Node(endpoint = {self.endpoint!r}, "
@@ -33,8 +30,7 @@ class Node():
         return self.rpc_request("getchaintips", [])
 
     def get_raw_transaction(self, tx_id: str):
-        #print(self.rpc_request("getrawtransaction", [tx_id, True]))
-        return self.rpc_request("getrawtransaction", [tx_id, True])  # true for returning a json
+        return self.rpc_request("getrawtransaction", [tx_id, True])  # true for obtaining a json
 
     def get_txout_proof(self, tx_id: str, block_hash: str):
         return self.rpc_request("gettxoutproof", [[tx_id], block_hash])  # block hash is optional
@@ -46,10 +42,13 @@ class Node():
         return self.rpc_request("sendrawtransaction", [tx_hex])['result']  # returns txid         
 
     def rpc_request(self, method: str, params):
-        data = {"jsonrpc": "1.0", "method": method, "params": params}
+        request_payload = {"jsonrpc": "1.0", "method": method, "params": params}
+
+        self.bytes_sent = self.bytes_sent + len(json.dumps(request_payload).encode('utf-8'))
+
         try: 
-            response = requests.post(self.endpoint, auth=HTTPBasicAuth(str(self.username), str(self.password)), data=json.dumps(data))  
-            globals.proof_size = globals.proof_size + sys.getsizeof(response.json()) 
+            response = requests.post(self.endpoint, auth=HTTPBasicAuth(str(self.username), str(self.password)), data=json.dumps(request_payload))  
+            self.bytes_received = self.bytes_received + sys.getsizeof(response.json()) 
 
         except requests.RequestException as e:
             print(f"Error querying node at {self.endpoint}: {e}")
