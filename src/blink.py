@@ -13,6 +13,7 @@ def main():
     # read cli commands
     parser = argparse.ArgumentParser(description="A simple CLI tool.")
     parser.add_argument('--dry-run', action='store_true', default=False)
+    parser.add_argument('--mainnet', action='store_true', default=False)
     parser.add_argument('--test-txid', type=str, default='e30df7cd39d12577f6a7b4cb91f545484822125728e7b9e0812366971b646525') 
     parser.add_argument('--config', default='./src/config.ini')
     args = parser.parse_args()
@@ -20,15 +21,27 @@ def main():
     # read config file
     Config = configparser.ConfigParser()
     Config.read(args.config) 
+
     k = Config.getint('Common Prefix', 'k')
-    nodes_endpoints = ast.literal_eval(Config['Settings']['nodes_endpoints'])
-    nodes_usernames = ast.literal_eval(Config['Settings']['nodes_usernames'])
-    nodes_passwords = ast.literal_eval(Config['Settings']['nodes_passwords'])
-    network = Config.get('Settings', 'network')
-    input_txid = ast.literal_eval(Config['Entropy Transaction Parameters']['input_txid'])
-    output_id = Config.getint('Entropy Transaction Parameters', 'output_id')
-    coins = Config.getint('Entropy Transaction Parameters', 'coins')
-    fee = Config.getint('Entropy Transaction Parameters', 'fee')
+     
+    if args.mainnet:
+        nodes_endpoints = ast.literal_eval(Config['Mainnet Settings']['nodes_endpoints'])
+        nodes_usernames = ast.literal_eval(Config['Mainnet Settings']['nodes_usernames'])
+        nodes_passwords = ast.literal_eval(Config['Mainnet Settings']['nodes_passwords'])
+        network = Config.get('Mainnet Settings', 'network')
+        input_txid = ast.literal_eval(Config['Mainnet Settings']['input_txid'])
+        output_id = Config.getint('Mainnet Settings', 'output_id')
+        coins = Config.getint('Mainnet Settings', 'coins')
+        fee = Config.getint('Mainnet Settings', 'fee')
+    else: 
+        nodes_endpoints = ast.literal_eval(Config['Testnet Settings']['nodes_endpoints'])
+        nodes_usernames = ast.literal_eval(Config['Testnet Settings']['nodes_usernames'])
+        nodes_passwords = ast.literal_eval(Config['Testnet Settings']['nodes_passwords'])
+        network = Config.get('Testnet Settings', 'network')
+        input_txid = ast.literal_eval(Config['Testnet Settings']['input_txid'])
+        output_id = Config.getint('Testnet Settings', 'output_id')
+        coins = Config.getint('Testnet Settings', 'coins')
+        fee = Config.getint('Testnet Settings', 'fee')
 
     # connect to prover nodes
     nodes = []

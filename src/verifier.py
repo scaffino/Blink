@@ -1,23 +1,27 @@
 from pow import check_pow
 from merkle_verification import verify_merkle_proof
 from jsonschema import validate
-from schemas import schema_block_header, schema_proof, schema_block_hash, schema_raw_tx
+from schemas import schema_block_header, schema_general, schema_confirmed_raw_tx
 from node import Node
 from jsonschema.exceptions import ValidationError
 
 class Verifier():
 
     def broadcast_entropy(self, dry_run: str, test_txid: str, nodes: list, entropy_tx: str):
-        
+
         if not dry_run: 
+
             txid = nodes[0].post_tx(entropy_tx.serialize())
+
             # make sure txid exists and is of 32 bytes
             assert txid is not None, "Entropy not posted"
             assert (len(txid) == 64), "Assertion failed: txid is not of 32 bytes"
 
             print("Id of the newly posted entropy transaction: ", txid)
             return txid
+        
         else:
+
             return test_txid 
 
     # wait until the entropy tx has k confirmations, then check Blink proof
@@ -33,10 +37,9 @@ class Verifier():
                 if tx_info is None:
                     continue
                 if tx_info['error'] is None: 
-
-                    check_received_data(tx_info, schema_raw_tx, "Raw tx")
                     # wait until the entropy tx has k confirmations
                     if 'confirmations' in tx_info['result']:
+                        check_received_data(tx_info, schema_confirmed_raw_tx, "Raw tx")
                         if tx_info['result']['confirmations'] > k:
                             print("Entropy tx has {} confirmations. Getting and validating Blink proof...".format(k))
                         
@@ -60,13 +63,13 @@ class Verifier():
                 block_hash = node.get_block_hash(ii)
                 if block_hash['error'] is None:
                     break
-            check_received_data(block_hash, schema_block_hash, "Block hash")
+            check_received_data(block_hash, schema_general, "Block hash")
             block_hash = block_hash['result']
             block_header = node.get_block_header(block_hash)
             check_received_data(block_header, schema_block_header, "Block header")
             parenthash = block_header['result']['previousblockhash']
             previousblockhash = node.get_block_hash(ii-1)
-            check_received_data(previousblockhash, schema_block_hash, "Block hash")
+            check_received_data(previousblockhash, schema_general, "Block hash")
             previousblockhash = previousblockhash['result']
             if (ii > entropy_block_height-k):
                 assert parenthash == previousblockhash, "Ancestry check failed"  
@@ -79,7 +82,7 @@ class Verifier():
             # check merkle proof of inclusion of entropy tx into the middle block
             if (ii == entropy_block_height):
                 proof = node.get_txout_proof(txid, block_hash)
-                check_received_data(proof, schema_proof, "Proof of inclusion")
+                check_received_data(proof, schema_general, "Proof of inclusion")
                 verify_merkle_proof(proof['result'], block_header['result']['merkleroot'], txid)
 
         print("Blink proof is valid!")
@@ -91,6 +94,7 @@ def check_received_data(data: str, schema: str, type: str):
     try:
         validate(data, schema)
     except ValidationError as e:
+        validate(data, schema_general)
         print(f"{type} is not in the correct format: {e.message}")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")

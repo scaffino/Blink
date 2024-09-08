@@ -122,7 +122,7 @@ schema_block_hash = {
   ]
 }
 
-schema_raw_tx = {
+schema_confirmed_raw_tx = {
   "type": "object",
   "properties": {
     "result": {
@@ -205,6 +205,26 @@ schema_raw_tx = {
         "string",
         "null"
       ]
+    }
+  },
+  "required": [
+    "result",
+    "error",
+    "id"
+  ]
+}
+
+schema_general = {
+  "type": "object",
+  "properties": {
+    "result": {
+      "type": "string"
+    },
+    "error": {
+      "type": ["string", "null"]
+    },
+    "id": {
+      "type": ["string", "null"]
     }
   },
   "required": [
