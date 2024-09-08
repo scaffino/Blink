@@ -11,6 +11,7 @@ class Node():
         self.password = password
         self.bytes_received = 0
         self.bytes_sent = 0
+        self.responsive = True
 
     def __repr__(self):
         return (f"Node(endpoint = {self.endpoint!r}, "
@@ -50,8 +51,9 @@ class Node():
             response = requests.post(self.endpoint, auth=HTTPBasicAuth(str(self.username), str(self.password)), data=json.dumps(request_payload))  
             self.bytes_received = self.bytes_received + sys.getsizeof(response.json()) 
 
-        except requests.RequestException as e:
-            print(f"Error querying node at {self.endpoint}: {e}")
-            return None  # Handle the error by returning None 
+            return response.json()
 
-        return response.json()
+        except requests.RequestException as e:
+            if self.responsive: 
+                print(f"Node at {self.endpoint} is unresponsive: {e}")
+                self.responsive = False

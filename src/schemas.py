@@ -51,21 +51,20 @@ schema_block_header = {
             }
         },
         "required": [
-            "hash",
+            "hash", 
             "confirmations",
             "height",
-            "version",
+            "version", 
             "versionHex",
             "merkleroot",
-            "time",
+            "time", 
             "mediantime",
             "nonce",
             "bits",
             "difficulty",
-            "chainwork",
-            "nTx",
-            "previousblockhash",
-            "nextblockhash"
+            "chainwork", 
+            "nTx", 
+            "previousblockhash"
         ]
         },
         "error": {

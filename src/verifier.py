@@ -82,19 +82,20 @@ class Verifier():
             # check merkle proof of inclusion of entropy tx into the middle block
             if (ii == entropy_block_height):
                 proof = node.get_txout_proof(txid, block_hash)
-                check_received_data(proof, schema_general, "Proof of inclusion")
+                check_received_data(proof, schema_general, "Proof of tx inclusion")
                 verify_merkle_proof(proof['result'], block_header['result']['merkleroot'], txid)
 
         print("Blink proof is valid!")
         return True
 
 def check_received_data(data: str, schema: str, type: str):
-    if type == "Block hash": assert (len(data['result']) == 64), f"Assertion failed: {type} is not 32 bytes"
+    if data is not None:
+        if type == "Block hash": assert (len(data['result']) == 64), f"Assertion failed: {type} is not 32 bytes"
 
-    try:
-        validate(data, schema)
-    except ValidationError as e:
-        validate(data, schema_general)
-        print(f"{type} is not in the correct format: {e.message}")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        try:
+            validate(data, schema)
+        except ValidationError as e:
+            validate(data, schema_general)
+            print(f"{type} is not in the correct format: {e.message}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
