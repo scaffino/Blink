@@ -1,6 +1,5 @@
-#!/Users/gscaffino/anaconda3/bin/python
+#!/usr/local/bin/python 
 
-#/bin/python <- symlink to the above
 import ast
 import argparse
 import configparser
@@ -30,7 +29,6 @@ def main():
 
     k = config.getint('Common Prefix', 'k')
 
-    k = Config.getint('Common Prefix', 'k')
     # use dictionary for mainnet and testnet to deduplicate 
     if args.mainnet:
         nodes_endpoints = ast.literal_eval(config['Mainnet Settings']['nodes_endpoints'])
