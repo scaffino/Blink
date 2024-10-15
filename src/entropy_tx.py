@@ -2,7 +2,7 @@ from transactions import Transaction, TxInput, TxOutput
 from identity import Id
 from bitcoinutils.script import Script
 import os
-#todo specify it in config
+
 f = open("./src/secret-key.txt", "r") # the secret key file only contains the secret key
 secret_key = f.readline()
 

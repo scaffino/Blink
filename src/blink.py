@@ -28,8 +28,7 @@ def main():
     config.read(args.config)
 
     k = config.getint('Common Prefix', 'k')
-
-    # use dictionary for mainnet and testnet to deduplicate 
+ 
     if args.mainnet:
         nodes_endpoints = ast.literal_eval(config['Mainnet Settings']['nodes_endpoints'])
         nodes_usernames = ast.literal_eval(config['Mainnet Settings']['nodes_usernames'])
@@ -52,7 +51,7 @@ def main():
     # Connect to prover nodes
     nodes = []
     for ii in range(len(nodes_endpoints)):
-        node_instance = Node(nodes_endpoints[ii], nodes_usernames[ii], nodes_passwords[ii]) #todo: use zip to  create triple and avoid using [ii]. look into the tuple 
+        node_instance = Node(nodes_endpoints[ii], nodes_usernames[ii], nodes_passwords[ii]) 
         print(node_instance)
         nodes.append(node_instance)
 
@@ -71,8 +70,8 @@ def main():
     # Compute bytes sent and received by the verifier
     bytes_received = 0
     bytes_sent = 0
-    for node in range(len(nodes_endpoints)): #todo: for node in nodes: avoid range accesses
-        bytes_received = bytes_received + nodes[node].bytes_received #todo: use +=
+    for node in range(len(nodes_endpoints)): 
+        bytes_received += bytes_received + nodes[node].bytes_received 
         bytes_sent = bytes_sent + nodes[node].bytes_sent
 
     print("Bytes received with {} provers: {}".format(len(nodes_endpoints), bytes_received))
