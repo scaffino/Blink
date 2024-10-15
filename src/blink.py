@@ -26,34 +26,22 @@ def main():
     # Read config file
     config = configparser.ConfigParser()
     config.read(args.config)
-
+    network = 'Mainnet' if args.mainnet else 'Testnet' 
+    settings = {key: ast.literal_eval(config[network][key]) for key in [
+        'nodes_endpoints', 
+        'nodes_usernames', 
+        'nodes_passwords' 
+    ]}
+    nodes = [
+        Node(endpoint, username, password) 
+        for endpoint, username, password in zip(settings['nodes_endpoints'], settings['nodes_usernames'], settings['nodes_passwords']) 
+    ]
+    number_of_nodes = len(nodes)
+    input_txid = ast.literal_eval(config[network]['input_txid'])
+    output_id = config.getint(network, 'output_id')
+    coins = config.getint(network, 'coins')
+    fee = config.getint(network, 'fee')
     k = config.getint('Common Prefix', 'k')
- 
-    if args.mainnet:
-        nodes_endpoints = ast.literal_eval(config['Mainnet Settings']['nodes_endpoints'])
-        nodes_usernames = ast.literal_eval(config['Mainnet Settings']['nodes_usernames'])
-        nodes_passwords = ast.literal_eval(config['Mainnet Settings']['nodes_passwords'])
-        network = config.get('Mainnet Settings', 'network')
-        input_txid = ast.literal_eval(config['Mainnet Settings']['input_txid'])
-        output_id = config.getint('Mainnet Settings', 'output_id')
-        coins = config.getint('Mainnet Settings', 'coins')
-        fee = config.getint('Mainnet Settings', 'fee')
-    else:
-        nodes_endpoints = ast.literal_eval(config['Testnet Settings']['nodes_endpoints'])
-        nodes_usernames = ast.literal_eval(config['Testnet Settings']['nodes_usernames'])
-        nodes_passwords = ast.literal_eval(config['Testnet Settings']['nodes_passwords'])
-        network = config.get('Testnet Settings', 'network')
-        input_txid = ast.literal_eval(config['Testnet Settings']['input_txid'])
-        output_id = config.getint('Testnet Settings', 'output_id')
-        coins = config.getint('Testnet Settings', 'coins')
-        fee = config.getint('Testnet Settings', 'fee')
-
-    # Connect to prover nodes
-    nodes = []
-    for ii in range(len(nodes_endpoints)):
-        node_instance = Node(nodes_endpoints[ii], nodes_usernames[ii], nodes_passwords[ii]) 
-        print(node_instance)
-        nodes.append(node_instance)
 
     init.init_network(network)
 
@@ -70,12 +58,12 @@ def main():
     # Compute bytes sent and received by the verifier
     bytes_received = 0
     bytes_sent = 0
-    for node in range(len(nodes_endpoints)): 
-        bytes_received += bytes_received + nodes[node].bytes_received 
-        bytes_sent = bytes_sent + nodes[node].bytes_sent
+    for node in nodes: 
+        bytes_received += bytes_received + node.bytes_received 
+        bytes_sent = bytes_sent + node.bytes_sent
 
-    print("Bytes received with {} provers: {}".format(len(nodes_endpoints), bytes_received))
-    print("Bytes sent with {} provers: {}".format(len(nodes_endpoints), bytes_sent))
+    print("Bytes received with {} provers: {}".format(number_of_nodes, bytes_received))
+    print("Bytes sent with {} provers: {}".format(number_of_nodes, bytes_sent))
 
 
 if __name__ == "__main__":
