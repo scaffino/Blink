@@ -1,15 +1,8 @@
 from transactions import Transaction, TxInput, TxOutput
-from identity import Id
 from bitcoinutils.script import Script
 import os
 
-f = open("./src/secret-key.txt", "r") # the secret key file only contains the secret key
-secret_key = f.readline()
-
-id_user = Id(secret_key)
-
-
-def create_entropy_tx(input_txid: str, output_id: int, coins: int, fee: int):
+def create_entropy_tx(input_txid: str, output_id: int, coins: int, fee: int, id_user: str):
     # Input
     tx_in = TxInput(input_txid, output_id)
     

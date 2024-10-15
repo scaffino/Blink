@@ -4,6 +4,7 @@ import ast
 import argparse
 import configparser
 import init
+from identity import Id
 from node import Node
 from verifier import Verifier
 from entropy_tx import create_entropy_tx
@@ -41,12 +42,18 @@ def main():
     output_id = config.getint(network, 'output_id')
     coins = config.getint(network, 'coins')
     fee = config.getint(network, 'fee')
+    sk_file = ast.literal_eval(config['Secret Key File']['key_file'])
     k = config.getint('Common Prefix', 'k')
 
     init.init_network(network)
 
+    # Initialize user
+    f = open(sk_file, "r") # the secret key file only contains the secret key
+    secret_key = f.readline()
+    id_user = Id(secret_key)
+
     # Create entropy
-    entropy_tx = create_entropy_tx(input_txid, output_id, coins, fee)
+    entropy_tx = create_entropy_tx(input_txid, output_id, coins, fee, id_user)
 
     # Verifier logic
     verifier = Verifier()
