@@ -7,17 +7,17 @@ from schemas import (
 from node import Node
 from jsonschema.exceptions import ValidationError
 
+class Verifier():
 
-class Verifier:
-    
-    def broadcast_entropy(self, dry_run: str, test_txid: str,
-                          nodes: list, entropy_tx: str):
-        if not dry_run:
-            txid = nodes[0].post_tx(entropy_tx.serialize())
+    def broadcast_entropy(self, dry_run: str, test_txid: str, nodes: list, entropy_tx: str): #entropy_tx is Transaction object
+        #todo: if dry run, return test_txid at the beginning. this optimizes taking away the general stuff at the beginning
+        if not dry_run: 
+
+            txid = nodes[0].post_tx(entropy_tx.serialize()) #todo: braodcast the entropy to every node (for loop), and check that incoming data is valid
 
             # make sure txid exists and is of 32 bytes
-            assert txid is not None, "Entropy not posted"
-            assert len(txid) == 64, "Assertion failed: txid is not 32 bytes"
+            assert txid is not None, "Entropy not posted" #todo: now fails. use error handling
+            assert (len(txid) == 64), "Assertion failed: txid is not of 32 bytes"
 
             print("Id of the newly posted entropy transaction: ", txid)
             return txid
@@ -34,21 +34,16 @@ class Verifier:
                 # wait until the entropy tx appears in the ledger and can be queried
                 if tx_info is None:
                     continue
-                if tx_info['error'] is None:
+                if tx_info['error'] is None: #todo: check that the key error exists. Use: if 'error' not in tx_info or tx_info is none. Also check that the result key is there. 
                     # wait until the entropy tx has k confirmations
-                    if 'confirmations' in tx_info['result']:
-                        check_received_data(
-                            tx_info, schema_confirmed_raw_tx, "Raw tx"
-                        )
+                    if 'confirmations' in tx_info['result']: #todo: if confirmation fails (try except)
+                        check_received_data(tx_info, schema_confirmed_raw_tx, "Raw tx")
                         if tx_info['result']['confirmations'] > k:
-                            print(
-                                "Entropy tx has {} confirmations. "
-                                "Getting and validating Blink proof...".format(k)
-                            )
-                            valid_proof = self.check_proof(
-                                txid, tx_info, node, k
-                            )
-                            break
+                            print("Entropy tx has {} confirmations. Getting and validating Blink proof...".format(k))
+                        
+                            valid_proof = self.check_proof(txid, tx_info, node, k)
+                            break #todo: should not break unless the proof is valid. Fix code and do test (regression test)
+        
 
     # Get and check the Blink proof of 2k + 1 blocks
     def check_proof(self, txid: str, tx_info: str, node: Node, k: int):

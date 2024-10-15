@@ -1,9 +1,9 @@
 #!/Users/gscaffino/anaconda3/bin/python
 
+#/bin/python <- symlink to the above
 import ast
 import argparse
 import configparser
-
 import init
 from node import Node
 from verifier import Verifier
@@ -11,8 +11,9 @@ from entropy_tx import create_entropy_tx
 
 
 def main():
-    # Read CLI commands
-    parser = argparse.ArgumentParser(description="A simple CLI tool.")
+
+    # read cli commands
+    parser = argparse.ArgumentParser(description="A simple CLI tool for Blink PoPoW.")
     parser.add_argument('--dry-run', action='store_true', default=False)
     parser.add_argument('--mainnet', action='store_true', default=False)
     parser.add_argument(
@@ -29,6 +30,8 @@ def main():
 
     k = config.getint('Common Prefix', 'k')
 
+    k = Config.getint('Common Prefix', 'k')
+    # use dictionary for mainnet and testnet to deduplicate 
     if args.mainnet:
         nodes_endpoints = ast.literal_eval(config['Mainnet Settings']['nodes_endpoints'])
         nodes_usernames = ast.literal_eval(config['Mainnet Settings']['nodes_usernames'])
@@ -51,7 +54,7 @@ def main():
     # Connect to prover nodes
     nodes = []
     for ii in range(len(nodes_endpoints)):
-        node_instance = Node(nodes_endpoints[ii], nodes_usernames[ii], nodes_passwords[ii])
+        node_instance = Node(nodes_endpoints[ii], nodes_usernames[ii], nodes_passwords[ii]) #todo: use zip to  create triple and avoid using [ii]. look into the tuple 
         print(node_instance)
         nodes.append(node_instance)
 
@@ -70,10 +73,9 @@ def main():
     # Compute bytes sent and received by the verifier
     bytes_received = 0
     bytes_sent = 0
-
-    for node in nodes:
-        bytes_received += node.bytes_received
-        bytes_sent += node.bytes_sent
+    for node in range(len(nodes_endpoints)): #todo: for node in nodes: avoid range accesses
+        bytes_received = bytes_received + nodes[node].bytes_received #todo: use +=
+        bytes_sent = bytes_sent + nodes[node].bytes_sent
 
     print("Bytes received with {} provers: {}".format(len(nodes_endpoints), bytes_received))
     print("Bytes sent with {} provers: {}".format(len(nodes_endpoints), bytes_sent))
